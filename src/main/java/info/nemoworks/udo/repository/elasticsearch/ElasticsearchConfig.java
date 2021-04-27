@@ -10,7 +10,7 @@ import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 
 @Configuration
 public class ElasticsearchConfig {
-    
+
     
     @Bean
     RestHighLevelClient client() {
