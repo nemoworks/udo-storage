@@ -1,0 +1,41 @@
+{
+    "type": "object",
+    "title": "room schema",
+    "properties": {
+        "Name": {
+            "type": "string",
+            "description": "房间名"
+        },
+        "Area": {
+            "type": "number",
+            "description": "房间面积(平方米)"
+        },
+        "Size": {
+            "type": "object",
+            "properties": {
+                "length": {
+                    "type": "number",
+                    "description": "长"
+                },
+                "width": {
+                    "type": "number",
+                    "description": "宽"
+                },
+                "height": {
+                    "type": "number",
+                    "description": "高"
+                }
+            }
+        },
+        "DeviceList": {
+            "type": "array",
+            "template": {
+                "type": "link",
+                "url": "/schemas",
+                "params": {
+                    "kind": "device"
+                }
+            }
+        }
+    }
+}

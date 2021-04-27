@@ -1,0 +1,42 @@
+{
+    "type": "object",
+    "title": "air_purifier schema",
+    "properties": {
+        "Name": {
+            "type": "string",
+            "description": "产品名称"
+        },
+        "Brand": {
+            "type": "string",
+            "description": "品牌"
+        },
+        "Version": {
+            "type": "string",
+            "description": "型号"
+        },
+        "Color": {
+            "type": "string",
+            "description": "颜色"
+        },
+        "ControlStyle": {
+            "type": "string",
+            "description": "控制方式"
+        },
+        "Noise": {
+            "type": "number",
+            "description": "噪声(dB)"
+        },
+        "Flux": {
+            "type": "number",
+            "description": "风量(立方米/小时)"
+        },
+        "Guarantee": {
+            "type": "number",
+            "description": "保修期/月"
+        },
+        "Status": {
+            "type": "bool",
+            "description": "状态(开/关)"
+        }
+    }
+}
