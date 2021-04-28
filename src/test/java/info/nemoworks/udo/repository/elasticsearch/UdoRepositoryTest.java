@@ -23,47 +23,47 @@ import info.nemoworks.udo.model.UdoSchema;
 @Testcontainers
 public class UdoRepositoryTest {
 
-  public static class FixedElasticsearchContainer extends ElasticsearchContainer {
-    public FixedElasticsearchContainer() {
-      super();
+    public static class FixedElasticsearchContainer extends ElasticsearchContainer {
+        public FixedElasticsearchContainer() {
+            super();
+        }
+
+        public FixedElasticsearchContainer configurePort() {
+            super.addFixedExposedPort(9200, 9200);
+            super.addFixedExposedPort(9300, 9300);
+            return this;
+        }
     }
 
-    public FixedElasticsearchContainer configurePort() {
-      super.addFixedExposedPort(9200, 9200);
-      super.addFixedExposedPort(9300, 9300);
-      return this;
+    @Autowired
+    UdoWrapperRepository repository;
+
+    @Container
+    private static final FixedElasticsearchContainer es = new FixedElasticsearchContainer().configurePort();
+
+    @Test
+    public void assertContainerRunning() {
+        assertTrue(es.isRunning());
     }
-  }
 
-  @Autowired
-  UdoRepository repository;
+    @Test
+    public void insertOneUdo() throws JsonParseException, IOException {
 
-  @Container
-  private static final FixedElasticsearchContainer es = new FixedElasticsearchContainer().configurePort();
+        String jsonString = "{\"k1\":\"v1\",\"k2\":\"v2\"}";
 
-  @Test
-  public void assertContainerRunning() {
-    assertTrue(es.isRunning());
-  }
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode actualObj = mapper.readTree(jsonString);
 
-  @Test
-  public void insertOneUdo() throws JsonParseException, IOException {
+        UdoSchema schema = new UdoSchema(actualObj);
+        schema.setId("schema-1");
 
-    String jsonString = "{\"k1\":\"v1\",\"k2\":\"v2\"}";
+        Udo udo = new Udo(schema, actualObj);
+        udo.setId("udo-1");
+        System.out.println(es.getHttpHostAddress());
 
-    ObjectMapper mapper = new ObjectMapper();
-    JsonNode actualObj = mapper.readTree(jsonString);
+        repository.saveUdo(udo);
 
-    UdoSchema schema = new UdoSchema(actualObj);
-    schema.setId("schema-1");
-
-    Udo udo = new Udo(schema, actualObj);
-    udo.setId("udo-1");
-    System.out.println(es.getHttpHostAddress());
-
-    repository.save(new UdoDocument(udo));
-
-    System.out.print(repository.findById(udo.getId()).get());
-  }
+        System.out.print(repository.findById(udo.getId()).get());
+    }
 
 }

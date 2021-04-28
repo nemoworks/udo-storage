@@ -3,15 +3,16 @@ package info.nemoworks.udo.repository.elasticsearch;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 
 import info.nemoworks.udo.model.Udo;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Document(indexName = "udo")
 @Data
+@AllArgsConstructor
 public class UdoDocument {
 
     @Id
@@ -23,12 +24,8 @@ public class UdoDocument {
     @Field
     private JsonNode data;
 
-    public UdoDocument(Udo udo) {
-
-        this.id = udo.getId();
-        this.schema = udo.getSchema().toJsonObject();
-        this.data = udo.getData();
-
+    public Udo toUdo(){
+        return new Udo(this.getId(), this.getSchema(), this.getData());
     }
 
 }

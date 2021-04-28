@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface UdoRepository extends ElasticsearchRepository<UdoDocument, String> {
+public interface UdoDocumentRepository extends ElasticsearchRepository<UdoDocument, String> {
     
 }
