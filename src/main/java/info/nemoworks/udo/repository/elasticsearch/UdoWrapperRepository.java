@@ -43,10 +43,8 @@ public class UdoWrapperRepository implements UdoRepository {
 
     @Override
     public Udo findUdoById(String id) {
-        UdoDocument document = documentRepository.findById(id);
-        
-
-        return null;
+        UdoDocument document = documentRepository.findById(id).get();
+        return document.toUdo();
     }
 
     @Override

@@ -7,6 +7,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 
 import info.nemoworks.udo.model.Udo;
+import info.nemoworks.udo.model.UdoSchema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -24,8 +25,11 @@ public class UdoDocument {
     @Field
     private JsonNode data;
 
-    public Udo toUdo(){
-        return new Udo(this.getId(), this.getSchema(), this.getData());
+    public Udo toUdo() {
+        Udo udo = new Udo(new UdoSchema(this.getSchema()), this.getData());
+        udo.setId(this.getId());
+
+        return udo;
     }
 
 }

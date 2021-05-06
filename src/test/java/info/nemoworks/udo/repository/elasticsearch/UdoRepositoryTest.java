@@ -18,6 +18,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import info.nemoworks.udo.model.Udo;
 import info.nemoworks.udo.model.UdoSchema;
+import info.nemoworks.udo.storage.UdoPersistException;
 
 @SpringBootTest
 @Testcontainers
@@ -47,7 +48,7 @@ public class UdoRepositoryTest {
     }
 
     @Test
-    public void insertOneUdo() throws JsonParseException, IOException {
+    public void insertOneUdo() throws JsonParseException, IOException, UdoPersistException {
 
         String jsonString = "{\"k1\":\"v1\",\"k2\":\"v2\"}";
 
@@ -63,7 +64,7 @@ public class UdoRepositoryTest {
 
         repository.saveUdo(udo);
 
-        System.out.print(repository.findById(udo.getId()).get());
+        System.out.print(repository.findUdoById(udo.getId()));
     }
 
 }
