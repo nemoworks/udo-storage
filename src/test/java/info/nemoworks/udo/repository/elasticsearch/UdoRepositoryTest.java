@@ -21,52 +21,52 @@ import info.nemoworks.udo.model.Udo;
 import info.nemoworks.udo.model.UdoSchema;
 import info.nemoworks.udo.storage.UdoPersistException;
 
-@SpringBootTest
+@SpringBootTest (classes = {ElasticsearchConfig.class})
 @Testcontainers
 public class UdoRepositoryTest {
 
-    // public static class FixedElasticsearchContainer extends ElasticsearchContainer {
-    //     public FixedElasticsearchContainer() {
-    //         super();
-    //     }
+    public static class FixedElasticsearchContainer extends ElasticsearchContainer {
+        public FixedElasticsearchContainer() {
+            super();
+        }
 
-    //     public FixedElasticsearchContainer configurePort() {
-    //         super.addFixedExposedPort(9200, 9200);
-    //         super.addFixedExposedPort(9300, 9300);
-    //         return this;
-    //     }
-    // }
+        public FixedElasticsearchContainer configurePort() {
+            super.addFixedExposedPort(9200, 9200);
+            super.addFixedExposedPort(9300, 9300);
+            return this;
+        }
+    }
 
-    // @Autowired
-    // UdoWrapperRepository repository;
+    @Autowired
+    UdoWrapperRepository repository;
 
-    // @Container
-    // private static final FixedElasticsearchContainer es = new FixedElasticsearchContainer().configurePort();
+    @Container
+    private static final FixedElasticsearchContainer es = new FixedElasticsearchContainer().configurePort();
 
-    // @Test
-    // public void assertContainerRunning() {
-    //     assertTrue(es.isRunning());
-    // }
+    @Test
+    public void assertContainerRunning() {
+        assertTrue(es.isRunning());
+    }
 
-    // @Test
-    // public void insertOneUdo() throws JsonParseException, IOException, UdoPersistException {
+    @Test
+    public void insertOneUdo() throws JsonParseException, IOException, UdoPersistException {
 
-    //     String jsonString = "{\"k1\":\"v1\",\"k2\":\"v2\"}";
+        String jsonString = "{\"k1\":\"v1\",\"k2\":\"v2\"}";
 
-    //     ObjectMapper mapper = new ObjectMapper();
-    //     JsonNode actualObj = mapper.readTree(jsonString);
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode actualObj = mapper.readTree(jsonString);
 
-    //     UdoSchema schema = new UdoSchema(actualObj);
-    //     schema.setId("schema-1");
+        UdoSchema schema = new UdoSchema(actualObj);
+        schema.setId("schema-1");
 
-    //     Udo udo = new Udo(schema, actualObj);
-    //     udo.setId("udo-1");
-    //     System.out.println(es.getHttpHostAddress());
-    //     assertNotNull(udo);
+        Udo udo = new Udo(schema, actualObj);
+        udo.setId("udo-1");
+        System.out.println(es.getHttpHostAddress());
+        assertNotNull(udo);
 
-    //     // repository.saveUdo(udo);
+        // repository.saveUdo(udo);
 
-    //     // System.out.print(repository.findUdoById(udo.getId()));
-    // }
+        // System.out.print(repository.findUdoById(udo.getId()));
+    }
 
 }

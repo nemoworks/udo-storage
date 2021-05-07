@@ -1,7 +1,6 @@
 package info.nemoworks.udo.repository.elasticsearch;
 
 import org.elasticsearch.client.RestHighLevelClient;
-import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
@@ -12,15 +11,15 @@ import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 @TestConfiguration
 public class ElasticsearchConfig {
 
-    // @Bean
-    // RestHighLevelClient client() {
-    //     ClientConfiguration clientConfiguration = ClientConfiguration.builder().connectedTo("localhost:9200").build();
+    @Bean
+    RestHighLevelClient client() {
+        ClientConfiguration clientConfiguration = ClientConfiguration.builder().connectedTo("localhost:9200").build();
 
-    //     return RestClients.create(clientConfiguration).rest();
-    // }
+        return RestClients.create(clientConfiguration).rest();
+    }
 
-    // @Bean
-    // public ElasticsearchOperations elasticsearchTemplate() {
-    //     return new ElasticsearchRestTemplate(client());
-    // }
+    @Bean
+    public ElasticsearchOperations elasticsearchTemplate() {
+        return new ElasticsearchRestTemplate(client());
+    }
 }
