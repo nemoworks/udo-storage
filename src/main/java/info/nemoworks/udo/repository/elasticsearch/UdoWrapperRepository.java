@@ -64,8 +64,8 @@ public class UdoWrapperRepository implements UdoRepository {
 
         UdoDocument document = new UdoDocument(udo.getId(), udo.getSchema().toJsonObject(), udo.getData());
 
-        documentRepository.save(document);
-        return null;
+        UdoDocument udoDocument = documentRepository.save(document);
+        return udoDocument.toUdo();
     }
 
     @Override
