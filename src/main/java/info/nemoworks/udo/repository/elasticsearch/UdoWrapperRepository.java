@@ -66,7 +66,7 @@ public class UdoWrapperRepository implements UdoRepository {
     @Override
     public Udo saveUdo(Udo udo) throws UdoPersistException {
 
-        UdoDocument document = new UdoDocument(udo.getId(), udo.getSchema().toJsonObject(), udo.getData());
+        UdoDocument document = new UdoDocument(udo.getId(), udo.getSchema().toJsonObject().toString(), udo.getData().toString());
 
         UdoDocument udoDocument = documentRepository.save(document);
         return udoDocument.toUdo();

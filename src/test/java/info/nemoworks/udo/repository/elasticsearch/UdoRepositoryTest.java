@@ -8,6 +8,7 @@ import java.io.IOException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,7 @@ public class UdoRepositoryTest {
         String jsonString = "{\"k1\":\"v1\",\"k2\":\"v2\"}";
 
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode actualObj = mapper.readTree(jsonString);
+        ObjectNode actualObj = mapper.readTree(jsonString).deepCopy();
 
         UdoSchema schema = new UdoSchema(actualObj);
         schema.setId("schema-1");

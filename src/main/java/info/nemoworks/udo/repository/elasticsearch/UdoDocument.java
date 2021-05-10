@@ -1,10 +1,12 @@
 package info.nemoworks.udo.repository.elasticsearch;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import info.nemoworks.udo.model.Udo;
 import info.nemoworks.udo.model.UdoSchema;
@@ -20,16 +22,17 @@ public class UdoDocument {
     private String id;
 
     @Field
-    private JsonNode schema;
+    private String schema;
 
     @Field
-    private JsonNode data;
+    private String data;
 
     public Udo toUdo() {
-        Udo udo = new Udo(new UdoSchema(this.getSchema()), this.getData());
-        udo.setId(this.getId());
+        // Udo udo = new Udo(new UdoSchema(this.schema), this.getData());
+        // udo.setId(this.getId());
 
-        return udo;
+        // return udo;
+        return null;
     }
 
 }
