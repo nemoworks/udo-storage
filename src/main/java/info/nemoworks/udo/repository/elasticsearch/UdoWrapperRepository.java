@@ -2,6 +2,8 @@ package info.nemoworks.udo.repository.elasticsearch;
 
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -72,6 +74,14 @@ public class UdoWrapperRepository implements UdoRepository {
     public Udo sync(Udo udo) throws UdoPersistException {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public List<Udo> findAllUdos(){
+        List<UdoDocument> documents = Lists.newArrayList(documentRepository.findAll().iterator());
+        //todo
+        return documents.stream().map(doc -> doc.toUdo());
+
     }
 
 }

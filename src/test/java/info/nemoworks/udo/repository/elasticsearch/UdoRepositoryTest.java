@@ -22,7 +22,7 @@ import info.nemoworks.udo.model.UdoSchema;
 import info.nemoworks.udo.storage.UdoPersistException;
 
 @Import(ElasticsearchConfig.class)
-@SpringBootTest (classes = {info.nemoworks.udo.repository.elasticsearch.UdoWrapperRepository.class})
+@SpringBootTest(classes = { info.nemoworks.udo.repository.elasticsearch.UdoWrapperRepository.class })
 @Testcontainers
 public class UdoRepositoryTest {
 
@@ -62,12 +62,12 @@ public class UdoRepositoryTest {
 
         Udo udo = new Udo(schema, actualObj);
         udo.setId("udo-1");
-        System.out.println(es.getHttpHostAddress());
+        System.out.println(udo.toJsonObject());
         assertNotNull(udo);
 
-         repository.saveUdo(udo);
+        repository.saveUdo(udo);
 
-         System.out.print(repository.findUdoById(udo.getId()));
+        System.out.print(repository.findAllUdos.getId()));
     }
 
 }
