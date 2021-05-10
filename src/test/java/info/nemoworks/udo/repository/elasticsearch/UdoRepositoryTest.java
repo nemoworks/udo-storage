@@ -67,7 +67,7 @@ public class UdoRepositoryTest {
 
         repository.saveUdo(udo);
 
-        System.out.print(repository.findAllUdos.getId()));
+        System.out.print(repository.findAllUdos());
     }
 
 }

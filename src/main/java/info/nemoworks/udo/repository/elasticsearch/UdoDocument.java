@@ -2,7 +2,6 @@ package info.nemoworks.udo.repository.elasticsearch;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import org.elasticsearch.common.collect.HppcMaps.Object;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
