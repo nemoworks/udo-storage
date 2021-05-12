@@ -1,6 +1,8 @@
 package info.nemoworks.udo.repository.elasticsearch;
 
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
 
@@ -64,7 +66,7 @@ public class UdoWrapperRepository implements UdoRepository {
     @Override
     public Udo saveUdo(Udo udo) throws UdoPersistException {
 
-        UdoDocument document = new UdoDocument(udo.getId(), udo.getSchema().toJsonObject(), udo.getData());
+        UdoDocument document = new UdoDocument(udo.getId(), udo.getSchema().toJsonObject().toString(), udo.getData().toString());
 
         UdoDocument udoDocument = documentRepository.save(document);
         return udoDocument.toUdo();
@@ -77,10 +79,10 @@ public class UdoWrapperRepository implements UdoRepository {
     }
 
     @Override
-    public List<Udo> findAllUdos(){
+    public List<Udo> findAllUdos() {
         List<UdoDocument> documents = Lists.newArrayList(documentRepository.findAll().iterator());
-        //todo
-        return documents.stream().map(doc -> doc.toUdo());
+        // todo
+        return documents.stream().map(doc -> doc.toUdo()).collect(Collectors.toList());
 
     }
 
