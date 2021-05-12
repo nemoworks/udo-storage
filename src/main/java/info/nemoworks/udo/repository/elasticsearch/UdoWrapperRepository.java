@@ -128,6 +128,7 @@ public class UdoWrapperRepository implements UdoRepository {
 
     @Override
     public List<Udo> findUdosBySchema(UdoSchema schema) {
+        //todo
         List<Udo> udoSchemaList = new ArrayList<>();
         String schemaId = schema.getId();
         SearchRequest searchRequest = new SearchRequest(INDEX_UDO);
