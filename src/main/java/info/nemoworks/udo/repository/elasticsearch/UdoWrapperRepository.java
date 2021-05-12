@@ -1,9 +1,10 @@
 package info.nemoworks.udo.repository.elasticsearch;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -20,12 +21,11 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.stereotype.Component;
 
 import info.nemoworks.udo.model.Udo;
-import info.nemoworks.udo.model.UdoSchema;
+import info.nemoworks.udo.model.UdoType;
 import info.nemoworks.udo.storage.UdoNotExistException;
 import info.nemoworks.udo.storage.UdoPersistException;
 import info.nemoworks.udo.storage.UdoRepository;
@@ -38,7 +38,8 @@ public class UdoWrapperRepository implements UdoRepository {
     private final Gson gson;
 
     private static final String INDEX_UDO = "udo";
-    private static final String INDEX_SCHEMA = "udoschema";
+
+    private static final String INDEX_TYPE = "udotype";
 
     public UdoWrapperRepository(RestHighLevelClient client, Gson gson) {
         this.client = client;
@@ -46,14 +47,14 @@ public class UdoWrapperRepository implements UdoRepository {
     }
 
     @Override
-    public void deleteSchemaById(String id) throws UdoNotExistException {
-        DeleteRequest deleteRequest = new DeleteRequest(INDEX_SCHEMA);
+    public void deleteTypeById(String id) throws UdoNotExistException {
+        DeleteRequest deleteRequest = new DeleteRequest(INDEX_TYPE);
         deleteRequest.id(id);
         DeleteResponse deleteResponse = null;
         try {
             deleteResponse = client.delete(deleteRequest, RequestOptions.DEFAULT);
             if (!deleteResponse.getResult().equals(DocWriteResponse.Result.DELETED)) {
-                throw new UdoNotExistException("delete udoSchema failed.");
+                throw new UdoNotExistException("delete udoType failed.");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -78,18 +79,18 @@ public class UdoWrapperRepository implements UdoRepository {
     }
 
     @Override
-    public List<UdoSchema> findAllSchemas() {
-        List<UdoSchema> udoSchemaList = new ArrayList<>();
-        SearchRequest searchRequest = new SearchRequest(INDEX_SCHEMA);
+    public List<UdoType> findAllTypes() {
+        List<UdoType> udoTypeList = new ArrayList<>();
+        SearchRequest searchRequest = new SearchRequest(INDEX_TYPE);
         SearchResponse response = null;
         try {
             response = client.search(searchRequest, RequestOptions.DEFAULT);
             response.getHits().forEach(hit -> {
-                UdoSchema udoSchema = gson.fromJson(gson.toJson(hit.getSourceAsMap()), UdoSchema.class);
-                udoSchema.setId(hit.getId());
-                udoSchemaList.add(udoSchema);
+                UdoType udoType = gson.fromJson(gson.toJson(hit.getSourceAsMap()), UdoType.class);
+                udoType.setId(hit.getId());
+                udoTypeList.add(udoType);
             });
-            return udoSchemaList;
+            return udoTypeList;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -97,14 +98,14 @@ public class UdoWrapperRepository implements UdoRepository {
     }
 
     @Override
-    public UdoSchema findSchemaById(String id) {
-        GetRequest getRequest = new GetRequest(INDEX_SCHEMA);
+    public UdoType findTypeById(String id) {
+        GetRequest getRequest = new GetRequest(INDEX_TYPE);
         getRequest.id(id);
         GetResponse getResponse = null;
         try {
             getResponse = client.get(getRequest, RequestOptions.DEFAULT);
             Map<String, Object> source = getResponse.getSource();
-            return gson.fromJson(gson.toJson(source), UdoSchema.class);
+            return gson.fromJson(gson.toJson(source), UdoType.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -127,31 +128,32 @@ public class UdoWrapperRepository implements UdoRepository {
     }
 
     @Override
-    public List<Udo> findUdosBySchema(UdoSchema schema) {
-        //todo
-        List<Udo> udoSchemaList = new ArrayList<>();
-        String schemaId = schema.getId();
+    public List<Udo> findUdosByType(UdoType udoType) {
+        // todo
+        List<Udo> udoTypeList = new ArrayList<>();
+        String typeId = udoType.getId();
         SearchRequest searchRequest = new SearchRequest(INDEX_UDO);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.query(QueryBuilders.termQuery("schema.id", schemaId));
+        searchSourceBuilder.query(QueryBuilders.termQuery("type.id", typeId));
 
         return null;
     }
 
     @Override
-    public UdoSchema saveSchema(UdoSchema udoSchema) throws UdoPersistException {
-        JsonObject schema = udoSchema.toJsonObject();
-//        Gson gson = new Gson();
-        HashMap<String, LinkedTreeMap> hashMap = gson.fromJson(schema.toString(), HashMap.class);
-        IndexRequest request = new IndexRequest(INDEX_SCHEMA);
+    public UdoType saveType(UdoType udoType) throws UdoPersistException {
+        JsonObject type = udoType.toJsonObject();
+        // Gson gson = new Gson();
+        HashMap<String, LinkedTreeMap> hashMap = gson.fromJson(type.toString(), HashMap.class);
+        IndexRequest request = new IndexRequest(INDEX_TYPE);
         request.source(hashMap);
         IndexResponse response = null;
         try {
             response = client.index(request, RequestOptions.DEFAULT);
             if (response.getResult().equals(DocWriteResponse.Result.CREATED)) {
-                udoSchema.setId(response.getId());
-                return udoSchema;
-            } else throw new UdoPersistException("index udoSchema failed.");
+                udoType.setId(response.getId());
+                return udoType;
+            } else
+                throw new UdoPersistException("index udoType failed.");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -161,7 +163,6 @@ public class UdoWrapperRepository implements UdoRepository {
     @Override
     public Udo saveUdo(Udo udo) throws UdoPersistException {
         JsonObject object = udo.toJsonObject();
-//        Gson gson = new Gson();
         HashMap<String, LinkedTreeMap> hashMap = gson.fromJson(object.toString(), HashMap.class);
         IndexRequest request = new IndexRequest(INDEX_UDO);
         request.source(hashMap);
@@ -171,7 +172,8 @@ public class UdoWrapperRepository implements UdoRepository {
             if (response.getResult().equals(DocWriteResponse.Result.CREATED)) {
                 udo.setId(response.getId());
                 return udo;
-            } else throw new UdoPersistException("index udo failed.");
+            } else
+                throw new UdoPersistException("index udo failed.");
         } catch (IOException e) {
             e.printStackTrace();
         }

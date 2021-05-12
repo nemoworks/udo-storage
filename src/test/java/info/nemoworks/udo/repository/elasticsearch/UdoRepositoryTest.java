@@ -3,12 +3,8 @@ package info.nemoworks.udo.repository.elasticsearch;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
-import java.util.List;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -25,7 +21,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import info.nemoworks.udo.model.Udo;
-import info.nemoworks.udo.model.UdoSchema;
+import info.nemoworks.udo.model.UdoType;
+import info.nemoworks.udo.storage.UdoNotExistException;
 import info.nemoworks.udo.storage.UdoPersistException;
 
 @Import(ElasticsearchConfig.class)
@@ -65,49 +62,49 @@ public class UdoRepositoryTest {
                 + "'lastName': 'Gupta',"
                 + "'email': 'howtodoinjava@gmail.com'}";
         JsonObject data = new Gson().fromJson(jsonString,JsonObject.class);
-        UdoSchema schema = new UdoSchema(data);
-        UdoSchema udoSchema = repository.saveSchema(schema);
-        logger.info(udoSchema.toJsonObject().getAsString());
+        UdoType type = new UdoType(data);
+        UdoType udoType = repository.saveType(type);
+        logger.info(udoType.toJsonObject().getAsString());
     }
 
     @Test
-    public void testGetSchemaById() throws UdoPersistException {
+    public void testGetTypeById() throws UdoPersistException {
         String jsonString = "{'id': 1001, "
                 + "'firstName': 'Lokesh',"
                 + "'lastName': 'Gupta',"
                 + "'email': 'howtodoinjava@gmail.com'}";
         JsonObject data = new Gson().fromJson(jsonString,JsonObject.class);
-        UdoSchema schema = new UdoSchema(data);
-        UdoSchema udoSchema = repository.saveSchema(schema);
-        UdoSchema schemaById = repository.findSchemaById(udoSchema.getId());
+        UdoType schema = new UdoType(data);
+        UdoType udoSchema = repository.saveType(schema);
+        UdoType schemaById = repository.findTypeById(udoSchema.getId());
         logger.info(schemaById.toJsonObject().getAsString());
     }
 
     @Test
-    public void testFindAllSchemas() throws UdoPersistException {
+    public void testFindAllTypes() throws UdoPersistException {
         String jsonString = "{'id': 1001, "
                 + "'firstName': 'Lokesh',"
                 + "'lastName': 'Gupta',"
                 + "'email': 'howtodoinjava@gmail.com'}";
         JsonObject data = new Gson().fromJson(jsonString,JsonObject.class);
-        UdoSchema schema = new UdoSchema(data);
-        UdoSchema udoSchema = repository.saveSchema(schema);
-        repository.findAllSchemas().forEach(udoSchema1 -> {
-            System.out.println(udoSchema1.toJsonObject());
+        UdoType type = new UdoType(data);
+        UdoType udoSchema = repository.saveType(type);
+        repository.findAllTypes().forEach(udotype1 -> {
+            System.out.println(udotype1.toJsonObject());
         });
     }
 
     @Test
-    public void testDeleteSchemaById() throws UdoPersistException, UdoNotExistException {
+    public void testDeleteTypeById() throws UdoPersistException, UdoNotExistException {
         String jsonString = "{'id': 1001, "
                 + "'firstName': 'Lokesh',"
                 + "'lastName': 'Gupta',"
                 + "'email': 'howtodoinjava@gmail.com'}";
         JsonObject data = new Gson().fromJson(jsonString,JsonObject.class);
-        UdoSchema schema = new UdoSchema(data);
-        UdoSchema udoSchema = repository.saveSchema(schema);
-        repository.deleteSchemaById(udoSchema.getId());
-        logger.info("number of schemas: "+String.valueOf(repository.findAllSchemas().size()));
+        UdoType schema = new UdoType(data);
+        UdoType udoSchema = repository.saveType(schema);
+        repository.deleteTypeById(udoSchema.getId());
+        logger.info("number of schemas: "+String.valueOf(repository.findAllTypes().size()));
     }
 
 
@@ -170,10 +167,10 @@ public class UdoRepositoryTest {
                 "}";
 
         JsonObject data = new Gson().fromJson(jsonString,JsonObject.class);
-        UdoSchema schema = new UdoSchema(data);
-        schema.setId("schema-1");
+        UdoType type = new UdoType(data);
+        type.setId("schema-1");
 
-        Udo udo = new Udo(schema, data);
+        Udo udo = new Udo(type, data);
         assertNotNull(udo);
         Udo udo1 = repository.saveUdo(udo);
         System.out.println(udo1.toJsonObject());
@@ -182,7 +179,7 @@ public class UdoRepositoryTest {
 
         System.out.println(udoById.toJsonObject());
 
-        repository.deleteSchemaById(udo1.getId());
+        repository.deleteTypeById(udo1.getId());
     }
 
 }
