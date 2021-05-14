@@ -9,7 +9,6 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.internal.LinkedTreeMap;
-
 import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -39,6 +38,7 @@ public class UdoWrapperRepository implements UdoRepository {
     private final Gson gson;
 
     private static final String INDEX_UDO = "udo";
+
     private static final String INDEX_TYPE = "udotype";
 
     public UdoWrapperRepository(RestHighLevelClient client, Gson gson) {
@@ -143,7 +143,7 @@ public class UdoWrapperRepository implements UdoRepository {
     public UdoType saveType(UdoType udoType) throws UdoPersistException {
         JsonObject type = udoType.toJsonObject();
         // Gson gson = new Gson();
-        HashMap<String, LinkedTreeMap> hashMap = gson.fromJson(udoType.toString(), HashMap.class);
+        HashMap<String, LinkedTreeMap> hashMap = gson.fromJson(type.toString(), HashMap.class);
         IndexRequest request = new IndexRequest(INDEX_TYPE);
         request.source(hashMap);
         IndexResponse response = null;
@@ -163,7 +163,6 @@ public class UdoWrapperRepository implements UdoRepository {
     @Override
     public Udo saveUdo(Udo udo) throws UdoPersistException {
         JsonObject object = udo.toJsonObject();
-        // Gson gson = new Gson();
         HashMap<String, LinkedTreeMap> hashMap = gson.fromJson(object.toString(), HashMap.class);
         IndexRequest request = new IndexRequest(INDEX_UDO);
         request.source(hashMap);

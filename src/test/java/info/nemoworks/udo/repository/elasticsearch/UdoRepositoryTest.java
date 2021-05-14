@@ -6,6 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import info.nemoworks.udo.storage.UdoNotExistException;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +64,7 @@ public class UdoRepositoryTest {
         JsonObject data = new Gson().fromJson(jsonString,JsonObject.class);
         UdoType type = new UdoType(data);
         UdoType udoType = repository.saveType(type);
-        logger.info(udoType.toJsonObject().getAsString());
+        System.out.println(udoType.toJsonObject());
     }
 
     @Test
@@ -73,7 +77,7 @@ public class UdoRepositoryTest {
         UdoType schema = new UdoType(data);
         UdoType udoSchema = repository.saveType(schema);
         UdoType schemaById = repository.findTypeById(udoSchema.getId());
-        logger.info(schemaById.toJsonObject().getAsString());
+        System.out.println(schemaById.toJsonObject());
     }
 
     @Test
