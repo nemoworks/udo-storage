@@ -64,7 +64,7 @@ public class UdoRepositoryTest {
         JsonObject data = new Gson().fromJson(jsonString,JsonObject.class);
         UdoType type = new UdoType(data);
         UdoType udoType = repository.saveType(type);
-        logger.info(udoType.toJsonObject().getAsString());
+        System.out.println(udoType.toJsonObject());
     }
 
     @Test
@@ -77,7 +77,7 @@ public class UdoRepositoryTest {
         UdoType schema = new UdoType(data);
         UdoType udoSchema = repository.saveType(schema);
         UdoType schemaById = repository.findTypeById(udoSchema.getId());
-        logger.info(schemaById.toJsonObject().getAsString());
+        System.out.println(schemaById.toJsonObject());
     }
 
     @Test
