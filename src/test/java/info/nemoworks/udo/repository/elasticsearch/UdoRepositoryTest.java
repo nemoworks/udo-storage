@@ -6,10 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+
 import info.nemoworks.udo.storage.UdoNotExistException;
-import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +20,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import info.nemoworks.udo.model.Udo;
 import info.nemoworks.udo.model.UdoType;
-import info.nemoworks.udo.storage.UdoNotExistException;
 import info.nemoworks.udo.storage.UdoPersistException;
+
+import java.util.List;
 
 @Import(ElasticsearchConfig.class)
 @SpringBootTest(classes = { info.nemoworks.udo.repository.elasticsearch.UdoWrapperRepository.class })
@@ -68,16 +67,53 @@ public class UdoRepositoryTest {
     }
 
     @Test
+    public void testGetUdosByType(){
+        String udoTypeId = "d3CkaXkBwWaSNh-CvheE";
+        UdoType udoType = repository.findTypeById(udoTypeId);
+        List<Udo> udos = repository.findUdosByType(udoType);
+        udos.forEach(udo -> {
+            System.out.println(udo.toJsonObject());
+        });
+    }
+
+    @Test
+    public void testUpdateUdoType() throws UdoPersistException {
+        String udoTypeId = "d3CkaXkBwWaSNh-CvheE";
+        String s = "{\n" +
+                "    \"type\": \"object\",\n" +
+                "    \"title\": \"air_purifier\",\n" +
+                "    \"properties\": {\n" +
+                "        \"Name\": {\n" +
+                "            \"type\": \"string\",\n" +
+                "            \"description\": \"产品名称\"\n" +
+                "        },\n" +
+                "        \"Brand\": {\n" +
+                "            \"type\": \"string\",\n" +
+                "            \"description\": \"品牌\"\n" +
+                "        },\n" +
+                "        \"Version\": {\n" +
+                "            \"type\": \"string\",\n" +
+                "            \"description\": \"型号\"\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+        JsonObject data = new Gson().fromJson(s,JsonObject.class);
+        UdoType type = new UdoType(data);
+        UdoType udoType = repository.saveType(type);
+        System.out.println(udoType);
+    }
+
+    @Test
     public void testGetTypeById() throws UdoPersistException {
         String jsonString = "{'id': 1001, "
-                + "'firstName': 'Lokesh',"
-                + "'lastName': 'Gupta',"
-                + "'email': 'howtodoinjava@gmail.com'}";
+                + "'firstName': 'Lokest',"
+                + "'lastName': 'Guptt',"
+                + "'email': 'howtodoonjava@gmail.com'}";
         JsonObject data = new Gson().fromJson(jsonString,JsonObject.class);
-        UdoType schema = new UdoType(data);
-        UdoType udoSchema = repository.saveType(schema);
-        UdoType schemaById = repository.findTypeById(udoSchema.getId());
-        System.out.println(schemaById.toJsonObject());
+        UdoType type = new UdoType(data);
+        UdoType udoType = repository.saveType(type);
+        UdoType typeById = repository.findTypeById(udoType.getId());
+        System.out.println(udoType.toJsonObject());
     }
 
     @Test

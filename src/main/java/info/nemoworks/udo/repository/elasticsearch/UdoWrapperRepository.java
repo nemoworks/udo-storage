@@ -1,10 +1,7 @@
 package info.nemoworks.udo.repository.elasticsearch;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -18,6 +15,8 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.update.UpdateRequest;
+import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -40,6 +39,8 @@ public class UdoWrapperRepository implements UdoRepository {
     private static final String INDEX_UDO = "udo";
 
     private static final String INDEX_TYPE = "udotype";
+
+    private static final String UDO_TYPE_ID_LOC = "type.id";
 
     public UdoWrapperRepository(RestHighLevelClient client, Gson gson) {
         this.client = client;
@@ -105,7 +106,9 @@ public class UdoWrapperRepository implements UdoRepository {
         try {
             getResponse = client.get(getRequest, RequestOptions.DEFAULT);
             Map<String, Object> source = getResponse.getSource();
-            return gson.fromJson(gson.toJson(source), UdoType.class);
+            UdoType udoType = gson.fromJson(gson.toJson(source), UdoType.class);
+            udoType.setId(id);
+            return udoType;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -120,7 +123,9 @@ public class UdoWrapperRepository implements UdoRepository {
         try {
             getResponse = client.get(getRequest, RequestOptions.DEFAULT);
             Map<String, Object> source = getResponse.getSource();
-            return gson.fromJson(gson.toJson(source), Udo.class);
+            Udo udo = gson.fromJson(gson.toJson(source), Udo.class);
+            udo.setId(id);
+            return udo;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -129,22 +134,40 @@ public class UdoWrapperRepository implements UdoRepository {
 
     @Override
     public List<Udo> findUdosByType(UdoType udoType) {
-        // todo
-        List<Udo> udoTypeList = new ArrayList<>();
         String typeId = udoType.getId();
+        return this.findUdosByTypeId(typeId);
+    }
+
+    @Override
+    public List<Udo> findUdosByTypeId(String udoTypeId) {
+        List<Udo> udoList = new ArrayList<>();
         SearchRequest searchRequest = new SearchRequest(INDEX_UDO);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.query(QueryBuilders.termQuery("type.id", typeId));
-
+        searchSourceBuilder.query(QueryBuilders.matchQuery(UDO_TYPE_ID_LOC, udoTypeId));
+        searchRequest.source(searchSourceBuilder);
+        try {
+            SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+            response.getHits().forEach(hit -> {
+                Udo udo = gson.fromJson(gson.toJson(hit.getSourceAsMap()), Udo.class);
+                udo.setId(hit.getId());
+                udoList.add(udo);
+            });
+            return udoList;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return null;
     }
+
 
     @Override
     public UdoType saveType(UdoType udoType) throws UdoPersistException {
         JsonObject type = udoType.toJsonObject();
-        // Gson gson = new Gson();
         HashMap<String, LinkedTreeMap> hashMap = gson.fromJson(type.toString(), HashMap.class);
         IndexRequest request = new IndexRequest(INDEX_TYPE);
+        if(udoType.getId() != null){
+            request.id(udoType.getId());
+        }
         request.source(hashMap);
         IndexResponse response = null;
         try {
@@ -152,7 +175,9 @@ public class UdoWrapperRepository implements UdoRepository {
             if (response.getResult().equals(DocWriteResponse.Result.CREATED)) {
                 udoType.setId(response.getId());
                 return udoType;
-            } else
+            }else if(response.getResult().equals(DocWriteResponse.Result.UPDATED)){
+                return udoType;
+            }else
                 throw new UdoPersistException("index udoType failed.");
         } catch (IOException e) {
             e.printStackTrace();
@@ -165,6 +190,9 @@ public class UdoWrapperRepository implements UdoRepository {
         JsonObject object = udo.toJsonObject();
         HashMap<String, LinkedTreeMap> hashMap = gson.fromJson(object.toString(), HashMap.class);
         IndexRequest request = new IndexRequest(INDEX_UDO);
+        if(udo.getId() != null){
+            request.id(udo.getId());
+        }
         request.source(hashMap);
         IndexResponse response = null;
         try {
@@ -172,7 +200,9 @@ public class UdoWrapperRepository implements UdoRepository {
             if (response.getResult().equals(DocWriteResponse.Result.CREATED)) {
                 udo.setId(response.getId());
                 return udo;
-            } else
+            }else if(response.getResult().equals(DocWriteResponse.Result.UPDATED)){
+                return udo;
+            }else
                 throw new UdoPersistException("index udo failed.");
         } catch (IOException e) {
             e.printStackTrace();
