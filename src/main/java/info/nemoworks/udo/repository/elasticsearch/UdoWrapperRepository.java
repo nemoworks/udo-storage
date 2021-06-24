@@ -1,11 +1,18 @@
 package info.nemoworks.udo.repository.elasticsearch;
 
-import java.io.IOException;
-import java.util.*;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.internal.LinkedTreeMap;
+import info.nemoworks.udo.model.Udo;
+import info.nemoworks.udo.model.UdoType;
+import info.nemoworks.udo.storage.UdoNotExistException;
+import info.nemoworks.udo.storage.UdoPersistException;
+import info.nemoworks.udo.storage.UdoRepository;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -15,19 +22,11 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.update.UpdateRequest;
-import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.stereotype.Component;
-
-import info.nemoworks.udo.model.Udo;
-import info.nemoworks.udo.model.UdoType;
-import info.nemoworks.udo.storage.UdoNotExistException;
-import info.nemoworks.udo.storage.UdoPersistException;
-import info.nemoworks.udo.storage.UdoRepository;
 
 @Component
 public class UdoWrapperRepository implements UdoRepository {
@@ -133,6 +132,11 @@ public class UdoWrapperRepository implements UdoRepository {
     }
 
     @Override
+    public Udo findUdoByUri(String uri) throws UdoNotExistException {
+        return null;
+    }
+
+    @Override
     public List<Udo> findUdosByType(UdoType udoType) {
         String typeId = udoType.getId();
         return this.findUdosByTypeId(typeId);
@@ -165,7 +169,7 @@ public class UdoWrapperRepository implements UdoRepository {
         JsonObject type = udoType.toJsonObject();
         HashMap<String, LinkedTreeMap> hashMap = gson.fromJson(type.toString(), HashMap.class);
         IndexRequest request = new IndexRequest(INDEX_TYPE);
-        if(udoType.getId() != null){
+        if (udoType.getId() != null) {
             request.id(udoType.getId());
         }
         request.source(hashMap);
@@ -175,10 +179,11 @@ public class UdoWrapperRepository implements UdoRepository {
             if (response.getResult().equals(DocWriteResponse.Result.CREATED)) {
                 udoType.setId(response.getId());
                 return udoType;
-            }else if(response.getResult().equals(DocWriteResponse.Result.UPDATED)){
+            } else if (response.getResult().equals(DocWriteResponse.Result.UPDATED)) {
                 return udoType;
-            }else
+            } else {
                 throw new UdoPersistException("index udoType failed.");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -190,7 +195,7 @@ public class UdoWrapperRepository implements UdoRepository {
         JsonObject object = udo.toJsonObject();
         HashMap<String, LinkedTreeMap> hashMap = gson.fromJson(object.toString(), HashMap.class);
         IndexRequest request = new IndexRequest(INDEX_UDO);
-        if(udo.getId() != null){
+        if (udo.getId() != null) {
             request.id(udo.getId());
         }
         request.source(hashMap);
@@ -200,10 +205,11 @@ public class UdoWrapperRepository implements UdoRepository {
             if (response.getResult().equals(DocWriteResponse.Result.CREATED)) {
                 udo.setId(response.getId());
                 return udo;
-            }else if(response.getResult().equals(DocWriteResponse.Result.UPDATED)){
+            } else if (response.getResult().equals(DocWriteResponse.Result.UPDATED)) {
                 return udo;
-            }else
+            } else {
                 throw new UdoPersistException("index udo failed.");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
