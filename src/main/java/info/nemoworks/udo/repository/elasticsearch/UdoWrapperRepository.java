@@ -83,6 +83,7 @@ public class UdoWrapperRepository implements UdoRepository {
         List<UdoType> udoTypeList = new ArrayList<>();
         SearchRequest searchRequest = new SearchRequest(INDEX_TYPE);
         SearchResponse response = null;
+//        searchRequest.setBatchedReduceSize(20);
         try {
             response = client.search(searchRequest, RequestOptions.DEFAULT);
             response.getHits().forEach(hit -> {
@@ -227,6 +228,7 @@ public class UdoWrapperRepository implements UdoRepository {
         List<Udo> udoList = new ArrayList<>();
         SearchRequest searchRequest = new SearchRequest(INDEX_UDO);
         SearchResponse response = null;
+//        searchRequest.setBatchedReduceSize(20);
         try {
             response = client.search(searchRequest, RequestOptions.DEFAULT);
             response.getHits().forEach(hit -> {
