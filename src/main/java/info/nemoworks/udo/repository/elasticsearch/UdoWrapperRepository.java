@@ -132,10 +132,6 @@ public class UdoWrapperRepository implements UdoRepository {
         return null;
     }
 
-    @Override
-    public Udo findUdoByUri(String uri) throws UdoNotExistException {
-        return null;
-    }
 
     @Override
     public List<Udo> findUdosByType(UdoType udoType) {
