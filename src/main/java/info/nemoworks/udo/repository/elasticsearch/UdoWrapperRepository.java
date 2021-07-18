@@ -134,6 +134,11 @@ public class UdoWrapperRepository implements UdoRepository {
 
 
     @Override
+    public Udo findUdoByUri(String uri) throws UdoNotExistException {
+        return null;
+    }
+
+    @Override
     public List<Udo> findUdosByType(UdoType udoType) {
         String typeId = udoType.getId();
         return this.findUdosByTypeId(typeId);

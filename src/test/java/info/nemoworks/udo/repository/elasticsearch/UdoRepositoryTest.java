@@ -31,28 +31,28 @@ public class UdoRepositoryTest {
 
     private static final Logger logger = LoggerFactory.getLogger(UdoRepositoryTest.class);
 
-    public static class FixedElasticsearchContainer extends ElasticsearchContainer {
-        public FixedElasticsearchContainer() {
-            super();
-        }
-
-        public FixedElasticsearchContainer configurePort() {
-            super.addFixedExposedPort(9200, 9200);
-            super.addFixedExposedPort(9300, 9300);
-            return this;
-        }
-    }
+//    public static class FixedElasticsearchContainer extends ElasticsearchContainer {
+//        public FixedElasticsearchContainer() {
+//            super();
+//        }
+//
+//        public FixedElasticsearchContainer configurePort() {
+//            super.addFixedExposedPort(9200, 9200);
+//            super.addFixedExposedPort(9300, 9300);
+//            return this;
+//        }
+//    }
 
     @Autowired
     UdoWrapperRepository repository;
 
-    @Container
-    private static final FixedElasticsearchContainer es = new FixedElasticsearchContainer().configurePort();
-
-    @Test
-    public void assertContainerRunning() {
-        assertTrue(es.isRunning());
-    }
+//    @Container
+//    private static final FixedElasticsearchContainer es = new FixedElasticsearchContainer().configurePort();
+//
+//    @Test
+//    public void assertContainerRunning() {
+//        assertTrue(es.isRunning());
+//    }
 
     @Test
     public void insetOneSchema() throws UdoPersistException, UdoNotExistException {
@@ -207,6 +207,7 @@ public class UdoRepositoryTest {
         type.setId("schema-1");
 
         Udo udo = new Udo(type, data);
+        udo.uri = "http://localhost:8081/";
         assertNotNull(udo);
         Udo udo1 = repository.saveUdo(udo);
         System.out.println(udo1.toJsonObject());
