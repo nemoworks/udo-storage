@@ -149,6 +149,7 @@ public class UdoWrapperRepository implements UdoRepository {
         SearchRequest searchRequest = new SearchRequest(INDEX_UDO);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(QueryBuilders.matchQuery(UDO_TYPE_ID_LOC, udoTypeId));
+        searchSourceBuilder.size(1000);
         searchRequest.source(searchSourceBuilder);
         try {
             SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
@@ -227,7 +228,11 @@ public class UdoWrapperRepository implements UdoRepository {
     public List<Udo> findAllUdos() {
         List<Udo> udoList = new ArrayList<>();
         SearchRequest searchRequest = new SearchRequest(INDEX_UDO);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.size(1000);
+        searchRequest.source(searchSourceBuilder);
         SearchResponse response = null;
+
 //        searchRequest.setBatchedReduceSize(20);
         try {
             response = client.search(searchRequest, RequestOptions.DEFAULT);
